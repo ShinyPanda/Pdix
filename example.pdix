@@ -1,0 +1,10 @@
+{title}[description of dictionary]~@
+{word 1}[description, definition]~@
+{format}[key words go into {} and definitions [] and end line ~@ ]~@
+{organization}[key words must be in alphabetical order]~@
+{multiple lines}[multiple lines
+
+can be
+used]~@
+{text editor}[the file example.pdix can be open with any text editor and see the format.
+to create big dictionaries better use scripts]~@
