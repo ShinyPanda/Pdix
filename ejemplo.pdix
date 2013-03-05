@@ -1,0 +1,10 @@
+{titulo}[descripción del diccionario]~@
+{palabra 1}[descripción, definición]~@
+{formato}[las palabras clave se escribe entre {} y las definiciones entre[] y se finaliza la linea con ~@ ]~@
+{organización}[las palabras clave deben estas en orden alfabético]~@
+{multiples lineas}[se pueden
+
+usar múltiples
+lineas]~@
+{editor de texto}[se puede abrir el archivo ejemplo.pdix con cualquier editor de texto para ver el formato.
+para crear grandes diccionarios conviene usar scripts]~@
