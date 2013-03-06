@@ -1,0 +1,16 @@
+usar netbeans para compilar
+crear un proyecto "Pdix"
+copiar fuentes (.java .form) en ~/netbeans/Pdix/src/Pdix/
+los otros archivos en ~/netbeans/Pdix/
+agregar el pack de apariencia "substance" como libreria a netbeans
+si usa gnome mate cinnamon o cualquier escritorio con atajos de teclas programables, programe un atajo "teclaWindows + P" que llame al comando "java -jar /home/<<usaer name; nombre de usuario>>/Pdix/Pdix.jar" para hacer saltar sobre las demas ventanas a Pdix en cualquier punto
+
+
+to compile use netbeans
+create a proyect "Pdix"
+copy sources (.java .form) to ~/netbeans/Pdix/src/Pdix/
+other files to ~/netbeans/Pdix/
+add the "substance" theme pack as a lib to netbeans
+if using gnome mate cinnamon or any desktop with programable keyboard shortcuts, program a shorcut like "mod_4 + P" that call a command "java -jar /home/<<usaer name; nombre de usuario>>/Pdix/Pdix.jar" to make Pdix popup at any time.
+
+

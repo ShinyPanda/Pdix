@@ -1,0 +1,3 @@
+sleep 30;
+cd /home/<<usaer name; nombre de usuario>>/Pdix/
+java -jar Pdix.jar hide;
