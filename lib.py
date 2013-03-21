@@ -1,11 +1,11 @@
-import gtk
+#import gtk
 import os#, sys
 #from ventana import ventana#este estaba encendido
 import ventana
 #from ventana import textfield
 
-cb = gtk.clipboard_get()
-ultimoCB=" "
+#cb = gtk.clipboard_get()
+#ultimoCB=" "
 ruta = os.getcwd()
 ficheros=""
 diccionarios=[]
@@ -15,7 +15,7 @@ RutaDix=""
 #defin=""
 
 
-def recortar(recorte):
+"""def recortar(recorte):
     #global ultimoCB
     ignorar="()[]{}' .,*:\n!?@#/+^"
     iniciopalabra=-1
@@ -42,7 +42,8 @@ def portapapeles():
                 ventana.ventana.textfield.set_text(cbpalabra)
                 #return cbpalabra
     except:
-        print "no se puede leer el portapapeles" 
+        print "no se puede leer el portapapeles"
+        """ 
 def buscardiccionarios():
     global ruta , errores , ficheros , diccionarios
     dictem=[]
@@ -118,6 +119,7 @@ def definicion(defi):
     if len(Definicion)==0:
         Definicion="ERROR\n\ndefinicion no encontrada\n\nnot found\n\npor favor abra el archivo .pidx con un editor de texto y revise el formato\n\nplease open the .pdix file whiy an text editor and cheack the format"
     #print Definicion
+    #Definicion = unicode(Definicion,'utf-8')#
     ventana.ventana.textBuffer.set_text(Definicion)
     #except:
         #print "error al abrir"

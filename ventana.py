@@ -1,4 +1,5 @@
 import pygtk
+import traceback
 #from lib import ejemplo
 #from pydix import diccionarios
 pygtk.require('2.0')
@@ -36,7 +37,10 @@ class ventana:
     textBuffer = textArea.get_buffer()
     model = gtk.ListStore(str)
     enter=65293
-    down=65364    
+    down=65364
+    cb = gtk.clipboard_get()
+    ultimoCB=" "
+    AutoOculatar = 5
     
     def guardarconf(self):        
         try:
@@ -51,8 +55,40 @@ class ventana:
             print "configuracion guardada"
         except:
             print "error al cerrar archivo"
-        
-   
+            
+    def recortar(self,recorte):
+        #global ultimoCB
+        ignorar="()[]{}' .,*:\n!?@#/+^"
+        iniciopalabra=-1
+        i=0
+        while i<len(recorte):
+            if iniciopalabra<0 and ignorar.find(recorte[i])<0:
+                iniciopalabra=i
+            if iniciopalabra>=0 and ignorar.find(recorte[i])>=0:
+                break
+            i=1+i
+        if iniciopalabra>=0 and i-iniciopalabra>=0:
+            recorte=recorte[iniciopalabra:i]
+        return recorte
+    
+    def portapapeles(self):
+        print "leyendo portapapeles"
+        #global ultimoCB,cb
+        clipboard=""
+        #clipboard=self.cb.wait_for_text()
+        try:
+            clipboard=self.cb.wait_for_text()
+            #print clipboard
+            if len(clipboard)>0 and len(clipboard)<150 and clipboard.find("http")<0 and self.ultimoCB != clipboard:
+                self.ultimoCB = clipboard
+                cbpalabra = self.recortar(clipboard)
+                if len(cbpalabra)>0:
+                    self.textfield.set_text(cbpalabra)
+                    #return cbpalabra
+        except:
+            print "no se puede leer el portapapeles"
+            print traceback.format_exc()
+
     def hello(self, widget, data=None):
         print "Hello World"        
 
@@ -70,14 +106,17 @@ class ventana:
     
     def mapeoteclas(self,widget,event,data=None):
         #print "presionada tecla...."
-        #print event.keyval
+        print event.keyval
         if event.keyval == gtk.keysyms.Escape:
             self.window.set_visible(False)
         elif event.keyval in (gtk.keysyms.Control_L, gtk.keysyms.c):            
             self.btncopiarevento(event, data)
         elif event.keyval == gtk.keysyms.Alt_L:
             print "cambiar diccionario"
-            #self.combo.
+            #self.combo
+        elif event.keyval in (gtk.keysyms.Control_L, gtk.keysyms.o):
+            print "cntrl + o"
+            self.portapapeles()
             
             
             
@@ -85,7 +124,7 @@ class ventana:
         if event.keyval == self.enter:
             self.window.set_focus(self.textArea)
             #no selecciona
-        elif event.keyval == self.down or event.keyval == gtk.keysyms.Up:# down y kp_down la misma mierda
+        elif event.keyval == self.down or event.keyval == gtk.keysyms.Up:# down y kp_down mismo error de mierda
             print "presionada tecla Down\nfocus debe ir a treeview"
             self.window.set_focus(self.treeView)
             # no salta a donde debe
@@ -93,23 +132,34 @@ class ventana:
             Dic.BuscarPalabra(self.textfield.get_text())
         
         
-    def btncopiarevento(self,event,data=None):    
-        Dic.ultimoCB = self.textBuffer.get_text(self.textBuffer.get_start_iter(),self.textBuffer.get_end_iter(),False)        
-        Dic.cb.set_text((Dic.ultimoCB))        
-        Dic.cb.store()
+    def btncopiarevento(self,event,data=None):
+        #global ultimoCB, 
+        self.ultimoCB = self.textBuffer.get_text(self.textBuffer.get_start_iter(),self.textBuffer.get_end_iter(),False)        
+        self.cb.set_text((self.ultimoCB))        
+        self.cb.store()
         self.window.set_focus(self.textfield)
         
         
     def focusEvento(self,widget,event,data=None):
+        #global portapapeles
+        if self.checkbox.get_active():
+            self.portapapeles()    
         self.window.set_focus(self.textfield)
         self.textfield.select_region(0,-1)
-        if self.checkbox.get_active():
-            Dic.portapapeles()                    
-                           
+        
+    def minimizado(self,widget,event,data=None):        
+        print "cambio de estado"        
+        mask = gtk.gdk.WINDOW_STATE_ICONIFIED                
+        if (widget.get_window().get_state() & mask == mask) and self.AutoOculatar>4:# and False:
+            print "minimizado detectado"
+            self.window.set_visible(False)
+            self.AutoOculatar = 0
+        self.AutoOculatar += 1 
          
     def checkEvento(self,event,data=None):
+        #global portapapeles
         if self.checkbox.get_active():
-            Dic.portapapeles()
+            self.portapapeles()
         self.guardarconf()
             
     def combochange(self,event):
@@ -163,17 +213,19 @@ class ventana:
     
     def __init__(self):        
         #self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.icono = gtk.gdk.pixbuf_new_from_file("logo.png")
-        self.window.set_icon(self.icono)
+        self.icono = gtk.gdk.pixbuf_new_from_file("logo.png")        
+        self.window.set_icon(self.icono)        
         self.window.connect("delete_event", self.delete_event)
         self.window.connect("destroy", self.destroy)
+        self.window.connect("window-state-event", self.minimizado)
+        #self.estado = self.window.get_state()
         self.window.set_title("PyDix")
         self.window.set_position(gtk.WIN_POS_CENTER)
         
 
         #self.window.set_opacity(0.5)   
         
-        #self.window.connect("focus_in_event",self.focusEvento)#cambiar este por otro evento. solo cuando la ventana es activada 
+        self.window.connect("focus_in_event",self.focusEvento)#cambiar este por otro evento. solo cuando la ventana es activada 
         self.window.connect("key_release_event",self.mapeoteclas)
         #self.window.connect("visibility_notify_event",Dic.ejemplo)
         self.window.set_border_width(10) 
@@ -259,8 +311,15 @@ class ventana:
     def on_right_click(self, icon, event_button, event_time):
         self.make_menu(event_button, event_time)
     def on_left_click(self, widget):
-        #print "ocultar o mostrar ventana"
-        self.window.set_visible(not self.window.get_visible())
+        if self.window.get_visible():
+        #hacerla invisible            
+            self.window.set_visible(False)                        
+        else:
+            #hacerla visible            
+            self.window.set_visible(True)                        
+            self.window.present() 
+            
+        
     def make_menu(self, event_button, event_time):
         menu = gtk.Menu()
         #add info
@@ -283,14 +342,18 @@ class ventana:
         exit()
     def imprimir(self,widget):
         self.textBuffer.set_text("por panda; en mis ratos libres ='3\nby panda; in my free time XD")
-        #self.window.set_visible(False)
-        self.window.set_visible(True)
-        self.window.get_focus()
+        if self.window.get_visible():
+            #hacerla invisible            
+            self.window.present()                        
+        else:
+            #hacerla visible            
+            self.window.set_visible(True)                        
+            self.window.present()
         
     def systray(self):
         #self.tray = gtk.StatusIcon()
-        self.tray = gtk.status_icon_new_from_file("logo.png")                
-        #self.tray.set_from_stock(gtk.STOCK_ABOUT)    
+        #self.tray.set_from_stock(gtk.STOCK_ABOUT)  
+        self.tray = gtk.status_icon_new_from_file("logo.png")
         self.tray.connect('popup-menu', self.on_right_click)
         self.tray.connect("activate",self.on_left_click)
         self.tray.set_tooltip(('PyDix'))
